@@ -21,18 +21,20 @@ CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
+
 def new_ball():   #Создание круга с рандомным положением
     coor = []  
     for i in range(randint(1, 10)):
         x = randint(50,1150)  #Координата x
         y = randint(50,450)   #Координата y
-        vx = random.randrange(-100, 100, 1)  #Скорость по x
-        vy = randint(-10, 10)   #Скорость по y
+        vx = randint(-100, 100)  #Скорость по x
+        vy = randint(-100, 100)   #Скорость по y
         r = randint(30,50)    #Радиус круга
         color = COLORS[randint(0, 5)]   #Выбор цвета 
         circle(screen, color, (x, y), r)   #Зарисовка круга
         coor.append([x, y, vx, vy, r, color])
     return coor  #Возвращение двумерного списка координат кругов
+
 
 def click(event, coor, score):  #Проверка на попадание клика в область (coor: двумерный список координат кругов; score - количество очков до щелчка)
     for i in range(len(coor)):
@@ -79,6 +81,9 @@ while not finished:   #Тело алгоритма
     coor = moving(coor)   #Считывание массива координат
     pygame.display.update()
     screen.fill(BLACK)
+    
+    
+
 with open("best.txt", "r") as f:       #Считывание старой таблицы
     a = list(map(lambda x: [y for y in x.rstrip().split()], f.readlines()))
 Find = False
@@ -95,4 +100,6 @@ for s in a:
     s[1] = str(s[1])
 with open("best.txt", "w") as f:         #Запись новой таблицы
     f.writelines([" ".join(x) + "\n" for x in a])
+    
+
 pygame.quit()
