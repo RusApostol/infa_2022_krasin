@@ -22,16 +22,17 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 
-''' 
+
+
+def new_ball():   
+    ''' 
 Создание произвольного круга. 
 x, y - координата центра круга
 vx, vy - скорость движение круга
 r - радиус круга
 color - цвет закраски круга
 coor - массив значений координат, скоростей и цветов кругов
-'''
-
-def new_ball():   
+    '''
     coor = []  
     for i in range(randint(1, 10)):
         x = randint(50,1150)
@@ -45,13 +46,13 @@ def new_ball():
     return coor
 
 
-'''
+
+def click(event, coor, score): 
+    '''
 Проверка на попадание мыши в область круга и написание Click! в командной строке
 coor - двумерный список координат кругов
 score - количество очков до щелчка мыши
-'''
-
-def click(event, coor, score): 
+    '''
     for i in range(len(coor)):
         if (event.pos[0] - coor[i][0])**2 + (event.pos[1] - coor[i][1])**2 <= coor[i][-2]**2:
             score += 1
@@ -59,12 +60,11 @@ def click(event, coor, score):
     return score
 
 
-'''
+def moving (coor):
+    '''
 Движение кругов и отражение от границ окна
 X, Y - размеры окна 
-'''
-
-def moving (coor):
+    '''
     for i in range(len(coor)):
         if (coor[i][0] <= coor[i][-2]):
             coor[i][2] = random.randrange(0, 100, 1)
