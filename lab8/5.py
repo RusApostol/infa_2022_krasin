@@ -22,21 +22,36 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 
-def new_ball():   #Создание круга с рандомным положением
+''' 
+Создание произвольного круга. 
+x, y - координата центра круга
+vx, vy - скорость движение круга
+r - радиус круга
+color - цвет закраски круга
+coor - массив значений координат, скоростей и цветов кругов
+'''
+
+def new_ball():   
     coor = []  
     for i in range(randint(1, 10)):
-        x = randint(50,1150)  #Координата x
-        y = randint(50,450)   #Координата y
-        vx = randint(-100, 100)  #Скорость по x
-        vy = randint(-100, 100)   #Скорость по y
-        r = randint(30,50)    #Радиус круга
-        color = COLORS[randint(0, 5)]   #Выбор цвета 
-        circle(screen, color, (x, y), r)   #Зарисовка круга
+        x = randint(50,1150)
+        y = randint(50,450)
+        vx = randint(-100, 100)
+        vy = randint(-100, 100)
+        r = randint(30,50)
+        color = COLORS[randint(0, 5)] 
+        circle(screen, color, (x, y), r)  
         coor.append([x, y, vx, vy, r, color])
-    return coor  #Возвращение двумерного списка координат кругов
+    return coor
 
 
-def click(event, coor, score):  #Проверка на попадание клика в область (coor: двумерный список координат кругов; score - количество очков до щелчка)
+'''
+Проверка на попадание мыши в область круга и написание Click! в командной строке
+coor - двумерный список координат кругов
+score - количество очков до щелчка мыши
+'''
+
+def click(event, coor, score): 
     for i in range(len(coor)):
         if (event.pos[0] - coor[i][0])**2 + (event.pos[1] - coor[i][1])**2 <= coor[i][-2]**2:
             score += 1
@@ -44,19 +59,24 @@ def click(event, coor, score):  #Проверка на попадание кли
     return score
 
 
-def moving (coor):   #Прорисовка движения кругов
+'''
+Движение кругов и отражение от границ окна
+X, Y - размеры окна 
+'''
+
+def moving (coor):
     for i in range(len(coor)):
-        if (coor[i][0] <= coor[i][-2]):  #Проверка на левый край
+        if (coor[i][0] <= coor[i][-2]):
             coor[i][2] = random.randrange(0, 100, 1)
-        elif (X - coor[i][0] <= coor[i][-2]):         #Проверка на правый край
+        elif (X - coor[i][0] <= coor[i][-2]):
             coor[i][2] = random.randrange(-100, 0, 1)
-        elif (coor[i][1] <= coor[i][-2]):            #Проверка на верхний край
+        elif (coor[i][1] <= coor[i][-2]):
             coor[i][3] = random.randrange(0, 100, 1)
-        elif  (Y - coor[i][1] <= coor[i][-2]):          #Проверка на нижний край
+        elif  (Y - coor[i][1] <= coor[i][-2]):
             coor[i][3] = random.randrange(-100, 0, 1)
-        coor[i][0] = coor[i][0] + coor[i][2]/10  #Добавка скорости по x
-        coor[i][1] = coor[i][1] + coor[i][3]/10      #Добавка скорости по y
-        circle(screen, coor[i][-1], (int(coor[i][0]), int(coor[i][1])), coor[i][-2])     #Прорисовка нового круга
+        coor[i][0] = coor[i][0] + coor[i][2]/10
+        coor[i][1] = coor[i][1] + coor[i][3]/10
+        circle(screen, coor[i][-1], (int(coor[i][0]), int(coor[i][1])), coor[i][-2])
     return coor
             
 
@@ -70,7 +90,7 @@ Start = False
 
 coor = new_ball()
 
-while not finished:   #Тело алгоритма
+while not finished:
     clock.tick(FPS)    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
