@@ -26,7 +26,7 @@ G = 0.4
 N = random.randint(1, 3)
 
 class Ball:
-    def __init__(self, screen: pygame.Surface, x=40, y=450):
+    def __init__(self, screen: pygame.Surface, x, y):
         """ Конструктор класса ball
         Args:
         x - начальное положение мяча по горизонтали
@@ -57,6 +57,10 @@ class Ball:
         self.live -= 1
 
     def draw(self):
+        
+        """
+        Drawing the Ball
+        """
         pygame.draw.circle(
             self.screen,
             self.color,
@@ -84,6 +88,12 @@ class Gun:
         self.f2_on = 0
         self.an = 1
         self.color = GREY
+        self.x = 50
+        self.y = 580
+        self.vx = 2
+        self.ax = 0
+        self.tank_l = 40
+        self.tank_h = self.y
 
     def fire2_start(self, event):
         self.f2_on = 1
@@ -95,7 +105,7 @@ class Gun:
         """
         global balls, bullet
         bullet += 1
-        new_ball = Ball(self.screen)
+        new_ball = Ball(self.screen, self.x, self.y)
         new_ball.r += 5
         self.an = math.atan2((event.pos[1] - new_ball.y), (event.pos[0] - new_ball.x))
         new_ball.vx = self.f2_power * math.cos(self.an) // 2
@@ -107,25 +117,52 @@ class Gun:
     def targetting(self, event):
         """Прицеливание. Зависит от положения мыши."""
         if event:
-            if event.pos[0] - 20 == 0:
-                self.an = math.asin(1)
-            else:
-                self.an = math.atan((event.pos[1] - 450) / (event.pos[0] - 20))
+            if event.pos[0] - self.x == 0:
+                if event.pos[1] > self.y:
+                    self.an = math.asin(1)
+                else:
+                    self.an = math.asin(1) + np.pi
+            elif event.pos[0] - self.x > 0:
+                self.an = math.atan((event.pos[1] - self.y) / (event.pos[0] - self.x))
+            elif event.pos[0] - self.x < 0:
+                self.an = math.atan((event.pos[1] - self.y) / (event.pos[0] - self.x)) + np.pi
         if self.f2_on:
             self.color = RED
         else:
             self.color = GREY
+    
+    def move(self):
+        """Переместить танк по прошествии единицы времени.
+        Метод описывает перемещение мяча за один кадр перерисовки. То есть, обновляет значения
+        self.x и self.y с учетом скоростей self.vx и self.vy, стен по краям окна (размер окна 800х600).
+        """
+        if self.x + self.tank_l + self.vx >= WIDTH or self.x - self.tank_l + self.vx <= 0:
+            self.vx = -self.vx
+        self.x += self.vx
+        self.vx += self.ax
+             
 
     def draw(self):
+        
+        """
+        Drawing the Tank and the Gun
+        """
         a = self.f2_power
-        b = 7
-        polygon(screen, self.color, [(20, 450),
-                                     (20 + a * math.cos(self.an), 450 + a * math.sin(self.an)),
-                                     (20 + a * math.cos(self.an) + b * math.sin(self.an),
-                                      450 + a * math.sin(self.an) - b * math.cos(self.an)),
-                                     (20 + b * math.sin(self.an), 450 - b * math.cos(self.an))])
+        b = 10
+        self.x
+        self.y
+        polygon(screen, self.color, [(self.x, self.y),
+                                     (self.x + a * math.cos(self.an), self.y + a * math.sin(self.an)),
+                                     (self.x + a * math.cos(self.an) + b * math.sin(self.an),
+                                      self.y + a * math.sin(self.an) - b * math.cos(self.an)),
+                                     (self.x + b * math.sin(self.an), self.y - b * math.cos(self.an))])
+        rect(self.screen, self.color, (self.x - self.tank_l, self.tank_h, 2 * self.tank_l, HEIGHT))
 
     def power_up(self):
+        
+        """
+        Limiting power of Gun
+        """
         if self.f2_on:
             if self.f2_power < 50:
                 self.f2_power += 1
@@ -162,6 +199,9 @@ class Target:
         self.points += points
 
     def draw(self):
+        """
+        Drawing the Target
+        """
         pygame.draw.circle(
             self.screen,
             self.color,
@@ -188,15 +228,18 @@ for i in range(N):
 for target in targets:
     target.new_target()
     
+    
+    
+    
 while not finished:
     del_balls = []
     screen.fill(WHITE)
-    gun.draw()
     for ball in balls:
         ball.draw()
     for target in targets:
         target.draw()
-    
+    gun.move()
+    gun.draw()
     text_score = text.render('score: ' + str(sum_score), True, (139, 0, 255))
     screen.blit(text_score, (20, 30))
     pygame.display.update()
@@ -222,7 +265,7 @@ while not finished:
                 gun.draw()
                 for b in balls:
                     b.draw()
-                if bullet <= 3:   #You have to hit the target for less than 3 shot
+                if bullet <= 3:   #You have to hit the target for less than 3 shots
                     sum_score += 1
                 text_score_1 = text.render('score: ' + str(sum_score), True, (139, 0, 255))
                 screen.blit(text_score_1, (20, 30))
@@ -241,3 +284,4 @@ while not finished:
     gun.power_up()
 
 pygame.quit()
+
